@@ -44,6 +44,17 @@ pub enum TokenType {
     PLUS,       // +
     SEMICOLON,  // ;
     STAR,       // *
+    SLASH,      // /
+
+    // One or two character tokens.
+    BANG,           // !
+    BANGEQUAL,      // !=
+    EQUAL,          // =
+    EQUALEQUAL,     // ==
+    GREATER,        // >
+    GREATEREQUAL,   // >=
+    LESS,           // <
+    LESSEQUAL,      // <=
 
     EOF         // end of file
 }

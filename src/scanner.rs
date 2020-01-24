@@ -68,6 +68,37 @@ impl Scanner<'_> {
             '+' => self.add_token(PLUS),
             ';' => self.add_token(SEMICOLON),
             '*' => self.add_token(STAR),
+            '/' => {
+                if self.match_char('/') {
+                    while self.peek(0) != '\n' && !self.is_at_end() {
+                        self.advance();
+                    }
+                } else {
+                    self.add_token(SLASH);
+                }
+            }
+            '!' => {
+                let token = if self.match_char('=') { BANGEQUAL } else { BANG };
+                self.add_token(token);
+            }
+            '=' => {
+                let token = if self.match_char('=') { EQUALEQUAL } else { EQUAL };
+                self.add_token(token);
+            }
+            '>' => {
+                let token = if self.match_char('=') { GREATEREQUAL } else { GREATER };
+                self.add_token(token);
+            }
+            '<' => {
+                let token = if self.match_char('=') { LESSEQUAL } else { LESS };
+                self.add_token(token);
+            }
+            '\n' => {
+                self.line += 1;
+            }
+            ' ' => {}
+            '\t' => {}
+            '\r' => {}
             _ => {}
         }
     }
@@ -88,5 +119,30 @@ impl Scanner<'_> {
     /// returns true iff the end of the source has been reached
     fn is_at_end(&self) -> bool {
         self.current >= self.source.len()
+    }
+
+    /// returns the character not yet advanced to.
+    /// the integer ahead parameter can be used to look farther ahead.
+    /// peek(0) is the first etc.
+    fn peek(&self, ahead: usize) -> char {
+        if self.is_at_end() {
+            '\0'
+        } else {
+            self.source[self.current + ahead..self.current + ahead + 1].chars().next().unwrap()
+        }
+    }
+
+    /// Advances only if the next character matches the given expected character and returns true,
+    /// or only returns false if there is no match.
+    fn match_char(&mut self, expected: char) -> bool {
+        if self.is_at_end() {
+            return false;
+        }
+        if self.source[self.current..self.current + 1].chars().next().unwrap() != expected {
+            return false;
+        }
+
+        self.current += 1;
+        true
     }
 }
