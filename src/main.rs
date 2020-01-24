@@ -3,6 +3,9 @@ use std::fs::File;
 use std::io::{self, BufRead, Read, Write};
 use std::process;
 
+mod scanner;
+mod tokens;
+
 /// main
 /// no arguments: run interactively
 /// 1 argument: run the script file specified
@@ -71,6 +74,16 @@ fn run_prompt() {
 }
 
 /// start interpreting and running the script
-fn run(_source: String) -> Result<&'static str, &'static str> {
-    Ok("")
+fn run(source: String) -> Result<&'static str, &'static str> {
+    return match scanner::scan_tokens(source.as_str()) {
+        Ok(tokens) => {
+            for token in tokens {
+                println!("{:?}", token);
+            }
+            Ok("Ok")
+        }
+        Err(code) => {
+            Err(code)
+        }
+    };
 }
