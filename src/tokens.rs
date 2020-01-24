@@ -4,16 +4,16 @@ use std::fmt;
 /// struct that contains a single token
 pub struct Token<'a> {
     // the type
-    pub lexeme: &'a str,
+    pub token_type: TokenType,
 
     // the actual part of the code that resulted in this token
-    pub literal: Box<dyn Any>,
+    pub lexeme: &'a str,
 
     // numeric (ie 1,2, 1.0 etc) and alphanumeric (any quoted text) values
-    pub line: usize,
+    pub literal: Box<dyn Any>,
 
     // the line that contains the code for this token instance
-    pub token_type: TokenType,
+    pub line: usize,
 }
 
 impl Token<'_> {
