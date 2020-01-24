@@ -102,8 +102,34 @@ impl Scanner<'_> {
             '\t' => {}
             '\r' => {}
             '\"' => self.string(),
-            _ => {}
+            _ => {
+                if next_char.is_digit(10) {
+                    self.number();
+                } else {
+                    self.report_error(self.line, "unexpected character");
+                }
+            }
         }
+    }
+
+    /// handle number literals
+   /// advances while characters are considered part of the number
+   /// finally adds a number token to the list.
+    fn number(&mut self) {
+        while self.peek(0).is_digit(10) {
+            self.advance();
+        }
+
+        if self.peek(0) == '.' && self.peek(1).is_digit(10) {
+            self.advance();
+
+            while self.peek(0).is_digit(10) {
+                self.advance();
+            }
+        }
+        let value: f64 = self.source[self.start..self.current].parse().expect("not a number");
+
+        self.add_token_literal(NUMBER, Box::new(value));
     }
 
     /// handle string literals
