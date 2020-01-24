@@ -1,5 +1,7 @@
-use std::process;
 use std::env;
+use std::fs::File;
+use std::io::{self, BufRead, Read, Write};
+use std::process;
 
 /// main
 /// no arguments: run interactively
@@ -17,10 +19,58 @@ fn main() {
     }
 }
 
-fn run_file(_path: &String) {
+/// run a script given in a file having the path specified
+fn run_file(path: &String) {
+    // open file
+    match File::open(path) {
+        Ok(mut file) => {
+            // read contents into string
+            let mut content = String::new();
+            file.read_to_string(&mut content).unwrap();
 
+            // run the script
+            match run(content) {
+                // exit on runtime error
+                Err(_) => { process::exit(65); }
+                _ => {}
+            }
+        }
+
+        // report a compilation error
+        Err(error) => {
+            eprintln!("Error compiling: {}", error);
+        }
+    }
 }
 
+/// run commands interactively
 fn run_prompt() {
+    // setup stdin to be able to read from it
+    let stdin = io::stdin();
+    let mut handle = stdin.lock();
 
+    // run continuously
+    loop {
+        // show prompt
+        print!(">");
+        io::stdout().flush().unwrap();
+
+        // read string from stdin
+        let mut content = String::new();
+        handle.read_line(&mut content).unwrap();
+        let source = String::from(content.trim());
+
+        // run input
+        match run(source) {
+            Err(message) => {
+                eprintln!("{}", message)
+            }
+            _ => {}
+        }
+    }
+}
+
+/// start interpreting and running the script
+fn run(_source: String) -> Result<&'static str, &'static str> {
+    Ok("")
 }
