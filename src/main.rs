@@ -6,6 +6,9 @@ use std::process;
 mod scanner;
 mod tokens;
 
+#[cfg(test)]
+mod tests;
+
 /// main
 /// no arguments: run interactively
 /// 1 argument: run the script file specified

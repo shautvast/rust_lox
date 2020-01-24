@@ -31,7 +31,7 @@ impl fmt::Debug for Token<'_> {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Eq, PartialEq, Debug, Clone, Copy)]
 pub enum TokenType {
     // Single-character tokens.
     LEFTPAREN,  // (
