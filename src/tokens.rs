@@ -16,6 +16,12 @@ pub struct Token<'a> {
     pub token_type: TokenType,
 }
 
+impl Token<'_>{
+    pub fn get_literal_as_string(&self) -> Option<&str>{
+        self.literal.downcast_ref::<String>().map(|s|s.as_str())
+    }
+}
+
 impl fmt::Debug for Token<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let lit = match self.literal.downcast_ref::<String>() {
@@ -55,6 +61,9 @@ pub enum TokenType {
     GREATEREQUAL,   // >=
     LESS,           // <
     LESSEQUAL,      // <=
+
+    // Literals.
+    STRING,
 
     EOF         // end of file
 }

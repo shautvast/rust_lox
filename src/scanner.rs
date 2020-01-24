@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use crate::tokens::{Token, TokenType};
 use crate::tokens::TokenType::*;
 
@@ -99,7 +101,29 @@ impl Scanner<'_> {
             ' ' => {}
             '\t' => {}
             '\r' => {}
+            '\"' => self.string(),
             _ => {}
+        }
+    }
+
+    /// handle string literals
+    /// advances until a terminating double quote is found and then adds the string token to the list
+    /// raises an interpreter error when the double-quote is not found and the end of the source has been reached
+    fn string(&mut self) {
+        while self.peek(0) != '\"' && !self.is_at_end() {
+            if self.peek(0) == '\n' {
+                self.line += 1;
+            }
+            self.advance();
+        }
+
+        if self.is_at_end() {
+            self.report_error(self.line, "unterminated string");
+        } else {
+            self.advance();
+
+            let value = String::from(&self.source[self.start + 1..self.current - 1]);
+            self.add_token_literal(STRING, Box::new(value));
         }
     }
 
@@ -113,6 +137,13 @@ impl Scanner<'_> {
     fn add_token(&mut self, token_type: TokenType) {
         let text = &self.source[self.start..self.current];
         let token = Token { token_type: token_type, lexeme: text, literal: Box::new(""), line: self.line };
+        self.tokens.push(token);
+    }
+
+    /// adds a token of the given type and content
+    fn add_token_literal(&mut self, token_type: TokenType, literal: Box<dyn Any>) {
+        let text = &self.source[self.start..self.current];
+        let token = Token { token_type: token_type, lexeme: text, literal: literal, line: self.line };
         self.tokens.push(token);
     }
 
@@ -144,5 +175,11 @@ impl Scanner<'_> {
 
         self.current += 1;
         true
+    }
+
+    /// prints the error and sets the flag
+    pub fn report_error(&mut self, line: usize, message: &str) {
+        self.error_occured = true;
+        println!("[line {} ] Error {} ", line, message);
     }
 }

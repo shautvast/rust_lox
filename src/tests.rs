@@ -33,7 +33,16 @@ fn test_scan_double_char_tokens() {
     let token = tokens.get(0).unwrap();
     assert_eq!(token.token_type, GREATEREQUAL);
     assert_eq!(token.lexeme, ">=");
+}
 
-    let token = tokens.get(1).unwrap();
-    assert_eq!(token.token_type, EOF);
+
+#[test]
+fn test_scan_string_literals() {
+    let tokens = scan_tokens("\"hello world\"").unwrap();
+    assert_eq!(tokens.len(), 2);
+
+    let token = tokens.get(0).unwrap();
+    assert_eq!(token.token_type, STRING);
+    assert_eq!(token.lexeme, "\"hello world\"");
+    assert_eq!(token.get_literal_as_string().unwrap(), "hello world");
 }
