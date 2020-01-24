@@ -1,5 +1,6 @@
 use std::any::Any;
 
+use crate::keywords::KEYWORDS;
 use crate::tokens::{Token, TokenType};
 use crate::tokens::TokenType::*;
 
@@ -105,9 +106,26 @@ impl Scanner<'_> {
             _ => {
                 if next_char.is_digit(10) {
                     self.number();
+                } else if is_alphabetic_or_underscore(next_char) {
+                    self.identifier();
                 } else {
                     self.report_error(self.line, "unexpected character");
                 }
+            }
+        }
+    }
+
+    fn identifier(&mut self) {
+        while is_alphanumeric(self.peek(0)) {
+            self.advance();
+        }
+        let text = &self.source[self.start..self.current];
+        match KEYWORDS.get(text) {
+            Some(token_type) => {
+                self.add_token(*token_type);
+            }
+            None => {
+                self.add_token(TokenType::IDENTIFIER);
             }
         }
     }
@@ -208,4 +226,13 @@ impl Scanner<'_> {
         self.error_occured = true;
         println!("[line {} ] Error {} ", line, message);
     }
+}
+
+
+fn is_alphabetic_or_underscore(c: char) -> bool {
+    c.is_alphabetic() || c == '_'
+}
+
+fn is_alphanumeric(c: char) -> bool {
+    is_alphabetic_or_underscore(c) || c.is_digit(10)
 }

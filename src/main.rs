@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate lazy_static;
+
 use std::env;
 use std::fs::File;
 use std::io::{self, BufRead, Read, Write};
@@ -5,6 +8,7 @@ use std::process;
 
 mod scanner;
 mod tokens;
+mod keywords;
 
 #[cfg(test)]
 mod tests;

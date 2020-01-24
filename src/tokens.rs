@@ -45,47 +45,49 @@ impl fmt::Debug for Token<'_> {
 pub enum TokenType {
     // Single-character tokens.
     LEFTPAREN,
-    // (
     RIGHTPAREN,
-    // )
     LEFTBRACE,
-    // [
     RIGHTBRACE,
-    // ]
     COMMA,
-    // ,
     DOT,
-    // .
     MINUS,
-    // -
     PLUS,
-    // +
     SEMICOLON,
-    // ;
     STAR,
-    // *
-    SLASH,      // /
+    SLASH,
 
     // One or two character tokens.
     BANG,
-    // !
     BANGEQUAL,
-    // !=
     EQUAL,
-    // =
     EQUALEQUAL,
-    // ==
     GREATER,
-    // >
     GREATEREQUAL,
-    // >=
     LESS,
-    // <
-    LESSEQUAL,      // <=
+    LESSEQUAL,
 
     // Literals.
     STRING,
     NUMBER,
+    IDENTIFIER,
+
+    // Keywords.
+    AND,
+    CLASS,
+    ELSE,
+    FALSE,
+    FUN,
+    FOR,
+    IF,
+    NIL,
+    OR,
+    PRINT,
+    RETURN,
+    SUPER,
+    THIS,
+    TRUE,
+    VAR,
+    WHILE,
 
     EOF,         // end of file
 }
