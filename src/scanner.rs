@@ -53,13 +53,40 @@ impl Scanner<'_> {
     }
 
     ///scans the source, character by character
-    fn scan_token(&mut self) {}
+    fn scan_token(&mut self) {
+        let next_char = self.advance();
+
+        // determine what to do with every character
+        match next_char {
+            '(' => self.add_token(LEFTPAREN),
+            ')' => self.add_token(RIGHTPAREN),
+            '{' => self.add_token(LEFTBRACE),
+            '}' => self.add_token(RIGHTBRACE),
+            ',' => self.add_token(COMMA),
+            '.' => self.add_token(DOT),
+            '-' => self.add_token(MINUS),
+            '+' => self.add_token(PLUS),
+            ';' => self.add_token(SEMICOLON),
+            '*' => self.add_token(STAR),
+            _ => {}
+        }
+    }
+
+    /// advance (consume) one character and return that
+    fn advance(&mut self) -> char {
+        self.current += 1;
+        self.source[self.current - 1..self.current].chars().next().unwrap()
+    }
 
     /// adds a token of the given type
-    fn add_token(&mut self, token_type: TokenType) {}
+    fn add_token(&mut self, token_type: TokenType) {
+        let text = &self.source[self.start..self.current];
+        let token = Token { token_type: token_type, lexeme: text, literal: Box::new(""), line: self.line };
+        self.tokens.push(token);
+    }
 
     /// returns true iff the end of the source has been reached
     fn is_at_end(&self) -> bool {
-        true
+        self.current >= self.source.len()
     }
 }

@@ -33,5 +33,17 @@ impl fmt::Debug for Token<'_> {
 
 #[derive(Debug, Clone, Copy)]
 pub enum TokenType {
-    EOF
+    // Single-character tokens.
+    LEFTPAREN,  // (
+    RIGHTPAREN, // )
+    LEFTBRACE,  // [
+    RIGHTBRACE, // ]
+    COMMA,      // ,
+    DOT,        // .
+    MINUS,      // -
+    PLUS,       // +
+    SEMICOLON,  // ;
+    STAR,       // *
+
+    EOF         // end of file
 }
