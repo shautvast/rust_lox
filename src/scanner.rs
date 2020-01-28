@@ -1,7 +1,5 @@
-use std::any::Any;
-
 use crate::keywords::KEYWORDS;
-use crate::tokens::{Token, TokenType};
+use crate::tokens::{Token, TokenType, Value};
 use crate::tokens::TokenType::*;
 
 /// public function for scanning lox source
@@ -16,8 +14,8 @@ pub fn scan_tokens(source: &str) -> Result<Vec<Token>, &'static str> {
 
     scanner.tokens.push(Token {
         token_type: EOF,
-        lexeme: "lexeme",
-        literal: Box::new(""),
+        lexeme: String::new(),
+        literal: Value::None,
         line: scanner.line,
     });
 
@@ -34,7 +32,7 @@ struct Scanner<'a> {
     source: &'a str,
 
     // the tokens that will be the output of the scan function
-    tokens: Vec<Token<'a>>,
+    tokens: Vec<Token>,
 
     // start of unscanned source (updated after part of the source was scanned)
     start: usize,
@@ -147,7 +145,7 @@ impl Scanner<'_> {
         }
         let value: f64 = self.source[self.start..self.current].parse().expect("not a number");
 
-        self.add_token_literal(NUMBER, Box::new(value));
+        self.add_token_literal(NUMBER, Value::Numeric(value));
     }
 
     /// handle string literals
@@ -167,7 +165,7 @@ impl Scanner<'_> {
             self.advance();
 
             let value = String::from(&self.source[self.start + 1..self.current - 1]);
-            self.add_token_literal(STRING, Box::new(value));
+            self.add_token_literal(STRING, Value::Text(value));
         }
     }
 
@@ -180,14 +178,14 @@ impl Scanner<'_> {
     /// adds a token of the given type
     fn add_token(&mut self, token_type: TokenType) {
         let text = &self.source[self.start..self.current];
-        let token = Token { token_type: token_type, lexeme: text, literal: Box::new(""), line: self.line };
+        let token = Token { token_type: token_type, lexeme: String::from(text), literal: Value::None, line: self.line };
         self.tokens.push(token);
     }
 
     /// adds a token of the given type and content
-    fn add_token_literal(&mut self, token_type: TokenType, literal: Box<dyn Any>) {
+    fn add_token_literal(&mut self, token_type: TokenType, literal: Value) {
         let text = &self.source[self.start..self.current];
-        let token = Token { token_type: token_type, lexeme: text, literal: literal, line: self.line };
+        let token = Token { token_type: token_type, lexeme: String::from(text), literal, line: self.line };
         self.tokens.push(token);
     }
 

@@ -6,12 +6,17 @@ use std::fs::File;
 use std::io::{self, BufRead, Read, Write};
 use std::process;
 
+use crate::expression::{Visitor, AstPrinter};
+
 mod scanner;
 mod tokens;
 mod keywords;
+mod expression;
+mod parser;
 
 #[cfg(test)]
-mod tests;
+mod scanner_tests;
+mod parser_tests;
 
 /// main
 /// no arguments: run interactively
@@ -84,9 +89,8 @@ fn run_prompt() {
 fn run(source: String) -> Result<&'static str, &'static str> {
     return match scanner::scan_tokens(source.as_str()) {
         Ok(tokens) => {
-            for token in tokens {
-                println!("{:?}", token);
-            }
+            let expr = parser::parse(tokens);
+            println!("{:?}", AstPrinter {}.visit_expr(&expr));
             Ok("Ok")
         }
         Err(code) => {

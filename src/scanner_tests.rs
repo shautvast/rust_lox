@@ -1,6 +1,7 @@
 #[cfg(test)]
 use crate::scanner::scan_tokens;
 use crate::tokens::TokenType::*;
+use crate::tokens::Value::{Numeric, Text};
 
 #[test]
 fn test_scan_empty_source() {
@@ -44,7 +45,12 @@ fn test_scan_string_literals() {
     let token = tokens.get(0).unwrap();
     assert_eq!(token.token_type, STRING);
     assert_eq!(token.lexeme, "\"hello world\"");
-    assert_eq!(token.get_literal_as_string().unwrap(), "hello world");
+    match token.literal.clone() {
+        Text(value) => {
+            assert_eq!(value, "hello world");
+        }
+        _ => { assert_eq!(true,false, "token value != hello world") }
+    }
 }
 
 #[test]
@@ -55,7 +61,12 @@ fn test_scan_numeric_literals() {
     let token = tokens.get(0).unwrap();
     assert_eq!(token.token_type, NUMBER);
     assert_eq!(token.lexeme, "0.1");
-    assert_eq!(token.get_literal_as_float().unwrap(), 0.1);
+    match token.literal {
+        Numeric(value) => {
+            assert_eq!(value, 0.1);
+        }
+        _ => { assert_eq!(true, false, "token value != 0.1") }
+    }
 }
 
 #[test]

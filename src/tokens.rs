@@ -1,47 +1,49 @@
-use std::any::Any;
 use std::fmt;
 
+#[derive(Clone, PartialOrd, PartialEq)]
+pub enum Value {
+    Text(String),
+    Numeric(f64),
+    Boolean(bool),
+    None,
+}
+
+impl fmt::Debug for Value {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Value::Text(value) => {
+                write!(f, "{}", value.to_string())
+            }
+            Value::Numeric(value) => {
+                write!(f, "{}", value)
+            }
+            Value::Boolean(value) => {
+                write!(f, "{}", value)
+            }
+            Value::None => {
+                write!(f, "Nil")
+            }
+        }
+    }
+}
+
 /// struct that contains a single token
-pub struct Token<'a> {
+#[derive(Debug, Clone, PartialOrd, PartialEq)]
+pub struct Token {
     // the type
     pub token_type: TokenType,
 
     // the actual part of the code that resulted in this token
-    pub lexeme: &'a str,
+    pub lexeme: String,
 
     // numeric (ie 1,2, 1.0 etc) and alphanumeric (any quoted text) values
-    pub literal: Box<dyn Any>,
+    pub literal: Value,
 
     // the line that contains the code for this token instance
     pub line: usize,
 }
 
-impl Token<'_> {
-    pub fn get_literal_as_string(&self) -> Option<&str> {
-        self.literal.downcast_ref::<String>().map(|s| s.as_str())
-    }
-
-    pub fn get_literal_as_float(&self) -> Option<f64> {
-        self.literal.downcast_ref::<f64>().map(|f| *f)
-    }
-}
-
-impl fmt::Debug for Token<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let lit = match self.literal.downcast_ref::<String>() {
-            Some(as_string) => {
-                as_string.to_string()
-            }
-            None => {
-                format!("{:?}", self.literal)
-            }
-        };
-
-        write!(f, "Token [ type: {:?}, lexeme: {}, literal: {}, line: {} ]", self.token_type, self.lexeme, lit, self.line)
-    }
-}
-
-#[derive(Eq, PartialEq, Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd)]
 pub enum TokenType {
     // Single-character tokens.
     LEFTPAREN,
